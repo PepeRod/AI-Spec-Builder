@@ -1,9 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateSpec, convertToMarkdown } from "@/lib/ai";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { sanitize, validateIdea } from "@/lib/validate";
 
 export async function POST(request: NextRequest) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
+
+  const { allowed, retryAfter } = checkRateLimit(ip);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Has generado demasiadas especificaciones. Espera un momento e inténtalo de nuevo." },
+      { status: 429, headers: { "Retry-After": String(retryAfter) } }
+    );
+  }
+
   try {
-    const { projectName, idea, platform, answers } = await request.json();
+    const body = await request.json();
+    const { projectName, idea, platform, answers } = body;
 
     if (!process.env.GEMINI_API_KEY) {
       return NextResponse.json(
@@ -12,17 +25,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!projectName || !idea || !platform) {
+    if (!projectName || !projectName.trim()) {
       return NextResponse.json(
-        { error: "Faltan campos obligatorios: projectName, idea y platform son requeridos." },
+        { error: "El nombre del proyecto no puede estar vacío." },
         { status: 400 }
       );
     }
 
-    // Call the structured Gemini generator
-    const spec = await generateSpec(projectName, idea, platform, answers);
-    
-    // Convert to markdown as well
+    if (!platform || !platform.trim()) {
+      return NextResponse.json(
+        { error: "La plataforma no puede estar vacía." },
+        { status: 400 }
+      );
+    }
+
+    const ideaError = validateIdea(idea);
+    if (ideaError) {
+      return NextResponse.json(
+        { error: ideaError },
+        { status: 400 }
+      );
+    }
+
+    const sanitizedProjectName = sanitize(projectName.trim());
+    const sanitizedIdea = sanitize(idea.trim());
+    const sanitizedPlatform = sanitize(platform.trim());
+
+    const spec = await generateSpec(sanitizedProjectName, sanitizedIdea, sanitizedPlatform, answers);
     const markdown = convertToMarkdown(spec);
 
     return NextResponse.json({ spec, markdown });
