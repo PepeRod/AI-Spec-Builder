@@ -6,6 +6,7 @@ import { generateUUID } from "@/lib/uuid";
 import InputForm, { SavedSpec } from "@/components/InputForm";
 import SpecOutput from "@/components/SpecOutput";
 import LoadingScreen from "@/components/LoadingScreen";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const LOADING_STAGES = [
   { stage: "Analizando tu idea y propuesta de valor...", duration: 3000 },
@@ -404,11 +405,14 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <div className="text-center md:text-right">
-            <p className="text-xs text-slate-400">Visual, Interactivo y Listo para Programadores</p>
-            <p className="text-xs font-bold text-violet-600 dark:text-violet-400 mt-0.5">
-              Potenciado por Google Gemini IA
-            </p>
+          <div className="flex items-center gap-3 text-center md:text-right">
+            <div>
+              <p className="text-xs text-slate-400">Visual, Interactivo y Listo para Programadores</p>
+              <p className="text-xs font-bold text-violet-600 dark:text-violet-400 mt-0.5">
+                Potenciado por Google Gemini IA
+              </p>
+            </div>
+            <ThemeToggle />
           </div>
         </div>
       </header>
