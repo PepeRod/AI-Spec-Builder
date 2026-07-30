@@ -209,3 +209,7 @@ Para mantener el proyecto viable como un MVP rápido y enfocado, los siguientes 
 - **Colaboración en tiempo real multiusuario:** No habrá un sistema tipo Google Docs donde varias personas editen la especificación al mismo tiempo ni hilos de comentarios entre socios dentro de la plataforma.
 - **Estimación de costos y tiempos de desarrollo reales:** La IA no calculará cotizaciones monetarias (ej. "Esto te costará $5,000 USD") ni semanas exactas de trabajo, ya que esto varía según el mercado, la región y el programador senior/junior que se contrate.
 - **Pasarela de pagos compleja o planes empresariales:** En esta primera fase, el acceso será gratuito o con un modelo de créditos muy simple mediante una integración básica (ej. Stripe estándar), dejando fuera esquemas de suscripción corporativa o facturación personalizada.
+
+### Features
+
+Fondo claro
