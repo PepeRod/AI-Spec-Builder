@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { SignInButton, Show, UserButton, useAuth } from "@clerk/nextjs";
 import { ProductSpec } from "@/lib/ai";
 import { generateUUID } from "@/lib/uuid";
 import InputForm, { SavedSpec } from "@/components/InputForm";
@@ -34,6 +35,8 @@ function decodeState(encoded: string): { spec: ProductSpec; markdown: string } |
 }
 
 export default function Home() {
+  const { isSignedIn, isLoaded } = useAuth();
+
   // Input states
   const [projectName, setProjectName] = useState("");
   const [idea, setIdea] = useState("");
@@ -405,14 +408,24 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3 text-center md:text-right">
-            <div>
+          <div className="flex items-center gap-4 text-center md:text-right">
+            <div className="hidden sm:block">
               <p className="text-xs text-slate-400">Visual, Interactivo y Listo para Programadores</p>
               <p className="text-xs font-bold text-violet-600 dark:text-violet-400 mt-0.5">
                 Potenciado por Google Gemini IA
               </p>
             </div>
             <ThemeToggle />
+            <Show when="signed-out">
+              <SignInButton mode="modal">
+                <button className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-semibold text-xs py-2 px-4 rounded-xl shadow-xs transition-all cursor-pointer">
+                  Iniciar Sesión
+                </button>
+              </SignInButton>
+            </Show>
+            <Show when="signed-in">
+              <UserButton />
+            </Show>
           </div>
         </div>
       </header>
@@ -440,6 +453,7 @@ export default function Home() {
           </div>
         )}
 
+        {isSharedView || (isLoaded && isSignedIn) ? (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full items-start">
           {/* Left Form Panel */}
           <InputForm
@@ -568,6 +582,30 @@ export default function Home() {
             )}
           </section>
         </div>
+        ) : !isLoaded ? (
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 py-24 text-center">
+            <div className="animate-spin h-8 w-8 rounded-full border-2 border-violet-500 border-t-transparent" />
+            <p className="text-sm text-slate-500 dark:text-slate-400">Cargando sesión...</p>
+          </div>
+        ) : (
+          <div className="flex flex-1 flex-col items-center justify-center gap-6 py-24 text-center">
+            <span className="text-7xl">🛠️</span>
+            <div className="max-w-lg space-y-3">
+              <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                Convierte tu idea en una especificación técnica
+              </h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                SpecGenius transforma tu visión de negocio en un documento de requerimientos profesional,
+                con historias de usuario, módulos y stack de desarrollo listos para programadores.
+              </p>
+            </div>
+            <SignInButton mode="modal">
+              <button className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold text-sm py-3 px-8 rounded-xl shadow-md shadow-violet-500/20 transition-all cursor-pointer">
+                🔑 Inicia sesión para generar especificaciones
+              </button>
+            </SignInButton>
+          </div>
+        )}
       </main>
 
       {/* Footer */}

@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { generateSpec, convertToMarkdown } from "@/lib/ai";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { sanitize, validateIdea } from "@/lib/validate";
 
 export async function POST(request: NextRequest) {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json(
+      { error: "No autorizado. Por favor inicia sesión." },
+      { status: 401 }
+    );
+  }
+
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
 
   const { allowed, retryAfter } = checkRateLimit(ip);

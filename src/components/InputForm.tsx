@@ -1,4 +1,5 @@
 import React from "react";
+import { Show, SignInButton } from "@clerk/nextjs";
 
 export interface SavedSpec {
   id: string;
@@ -239,30 +240,43 @@ export default function InputForm({
         </div>
 
         {/* Launch CTA */}
-        <button
-          onClick={() => startGeneration(false)}
-          disabled={isLoading}
-          className={`w-full font-bold text-white rounded-xl py-3.5 px-4 transition-all flex items-center justify-center gap-2 text-sm cursor-pointer ${
-            isLoading
-              ? "bg-slate-300 cursor-not-allowed dark:bg-zinc-800 dark:text-slate-500"
-              : "bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-md shadow-violet-500/10 hover:shadow-violet-500/20 active:scale-[0.99]"
-          }`}
-        >
-          {isLoading ? (
-            <>
-              <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-              <span>Generando Especificación...</span>
-            </>
-          ) : (
-            <>
-              <span>⚡</span>
-              <span>Generar Especificación Técnica</span>
-            </>
-          )}
-        </button>
+        <Show when="signed-out">
+          <SignInButton mode="modal">
+            <button
+              type="button"
+              className="w-full font-bold text-white rounded-xl py-3.5 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-md shadow-violet-500/10 hover:shadow-violet-500/20 active:scale-[0.99] transition-all flex items-center justify-center gap-2 text-sm cursor-pointer"
+            >
+              <span>🔑</span>
+              <span>Inicia Sesión para Generar</span>
+            </button>
+          </SignInButton>
+        </Show>
+        <Show when="signed-in">
+          <button
+            onClick={() => startGeneration(false)}
+            disabled={isLoading}
+            className={`w-full font-bold text-white rounded-xl py-3.5 px-4 transition-all flex items-center justify-center gap-2 text-sm cursor-pointer ${
+              isLoading
+                ? "bg-slate-300 cursor-not-allowed dark:bg-zinc-800 dark:text-slate-500"
+                : "bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-md shadow-violet-500/10 hover:shadow-violet-500/20 active:scale-[0.99]"
+            }`}
+          >
+            {isLoading ? (
+              <>
+                <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                <span>Generando Especificación...</span>
+              </>
+            ) : (
+              <>
+                <span>⚡</span>
+                <span>Generar Especificación Técnica</span>
+              </>
+            )}
+          </button>
+        </Show>
       </div>
 
       {/* Local Borradores / History Card */}
