@@ -213,3 +213,4 @@ Para mantener el proyecto viable como un MVP rápido y enfocado, los siguientes 
 ### Features
 
 Fondo claro
+Loigin con Clerk
